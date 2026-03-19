@@ -1,0 +1,10 @@
+{
+    "pythonVersion": "3.10",
+    "venvPath": ".",
+    "extraPaths": [
+        "src",
+        "backdoor-toolbox-main"
+    ],
+    "typeCheckingMode": "basic",
+    "reportMissingModuleSource": "none"
+}
