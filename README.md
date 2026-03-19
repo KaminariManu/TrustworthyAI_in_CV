@@ -12,6 +12,7 @@ Unified framework for training, attacking, defending, and reporting backdoor exp
 
 ## Repository layout
 
+```text
 .
 ├─ src/
 │  ├─ models.py
@@ -51,6 +52,7 @@ Unified framework for training, attacking, defending, and reporting backdoor exp
 ├─ QUICKSTART.md
 ├─ GETTING_STARTED.md
 └─ SETUP_SUMMARY.md
+```
 
 ## Models and datasets
 
