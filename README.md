@@ -82,7 +82,9 @@ Unified framework for training, attacking, defending, and reporting backdoor exp
 
 Run all predefined clean experiments:
 
+```bash
 conda run -n backdoor-toolbox python scripts/training/clean/run_baseline_training.py --mode 1
+```
 
 Useful modes:
 - mode 1: all groups
@@ -94,15 +96,21 @@ Useful modes:
 
 BadNet:
 
+```bash
 conda run -n backdoor-toolbox python scripts/training/attack/badnet/run_badnet_attack.py --mode 1
+```
 
 WaNet:
 
+```bash
 conda run -n backdoor-toolbox python scripts/training/attack/wanet/run_wanet_attack.py --mode 1
+```
 
 Refool:
 
+```bash
 conda run -n backdoor-toolbox python scripts/training/attack/refool/run_refool_attack.py --mode 1
+```
 
 Each attack also supports single-run and batch scripts in its folder.
 
@@ -110,32 +118,44 @@ Each attack also supports single-run and batch scripts in its folder.
 
 Run both defenses across attacks:
 
+```bash
 conda run -n backdoor-toolbox python scripts/defense/run_all_defenses.py --mode 1
+```
 
 Run one defense over selected checkpoints:
 
+```bash
 conda run -n backdoor-toolbox python scripts/defense/run_defense.py --help
+```
 
 ### 4) Reporting: tables and figures
 
 Baseline:
 
+```bash
 python scripts/visualization/generate_baseline_tables.py --results results/clean_results.json --save-dir results/tables/clean
 python scripts/visualization/generate_baseline_figures.py --results results/clean_results.json --save-dir results/figures/clean
+```
 
 Attack results:
 
+```bash
 python scripts/visualization/generate_tables.py --results results/badnet_results.json --save-dir results/tables/attack/badnet
 python scripts/visualization/generate_figures.py --results results/badnet_results.json --save-dir results/figures/attack/badnet --poison-type badnet
+```
 
 Defense results:
 
+```bash
 python scripts/visualization/generate_defense_tables.py --results results/defense/all_defenses_results.json --save-dir results/tables/defense
 python scripts/visualization/generate_defense_figures.py --results results/defense/all_defenses_results.json --save-dir results/figures/defense
+```
 
 Trigger visual examples:
 
+```bash
 python scripts/visualization/generate_attack_trigger_figures.py --poison-type badnet --datasets cifar10 gtsrb --output-dir results/figures/attack_triggers
+```
 
 ## Output conventions
 
@@ -158,4 +178,38 @@ python scripts/visualization/generate_attack_trigger_figures.py --poison-type ba
 
 ## License and citation
 
-Use dataset/model citations from your manuscript or project documentation as required by CIFAR-10, GTSRB, and any external components used in experiments.
+If you use this repository in academic work, please cite the datasets and core methods below.
+
+### Datasets
+
+- CIFAR-10
+   - Krizhevsky, A. (2009). Learning Multiple Layers of Features from Tiny Images. University of Toronto.
+- GTSRB (German Traffic Sign Recognition Benchmark)
+   - Stallkamp, J., Schlipsing, M., Salmen, J., & Igel, C. (2012). Man vs. computer: Benchmarking machine learning algorithms for traffic sign recognition. Neural Networks, 32, 323-332.
+
+### Backdoor attacks
+
+- BadNets
+   - Gu, T., Dolan-Gavitt, B., & Garg, S. (2017). BadNets: Identifying Vulnerabilities in the Machine Learning Model Supply Chain.
+- WaNet
+   - Nguyen, A., Tran, A., et al. (2021). WaNet: Imperceptible Warping-based Backdoor Attack.
+- Refool
+   - Liu, Y., Ma, X., et al. (2020). Refool: Reflection Backdoor Attack on Deep Neural Network.
+
+### Defenses
+
+- STRIP
+   - Gao, Y., Xu, C., et al. (2019). STRIP: A Defence Against Trojan Attacks on Deep Neural Networks.
+- Neural Cleanse
+   - Wang, B., Yao, Y., et al. (2019). Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks.
+
+### Model families
+
+- ResNet
+   - He, K., Zhang, X., Ren, S., & Sun, J. (2016). Deep Residual Learning for Image Recognition.
+- VGG
+   - Simonyan, K., & Zisserman, A. (2015). Very Deep Convolutional Networks for Large-Scale Image Recognition.
+- Vision Transformer (ViT)
+   - Dosovitskiy, A., Beyer, L., et al. (2021). An Image is Worth 16x16 Words: Transformers for Image Recognition at Scale.
+- DeiT
+   - Touvron, H., Cord, M., et al. (2021). Training data-efficient image transformers & distillation through attention.
