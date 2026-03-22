@@ -37,7 +37,15 @@ from utils.visualization_utils import (
 
 # Set style
 set_plot_style('whitegrid', font_scale=1.0)
-plt.rcParams['figure.figsize'] = (12, 8)
+plt.rcParams.update({
+    'figure.figsize': (12, 8),
+    'font.size': 14,
+    'axes.titlesize': 18,
+    'axes.labelsize': 14,
+    'xtick.labelsize': 12,
+    'ytick.labelsize': 12,
+    'legend.fontsize': 12,
+})
 
 
 def load_results(results_path):
@@ -90,15 +98,23 @@ def plot_accuracy_comparison(results, save_path, attack_name="Backdoor"):
     for i, dataset in enumerate(datasets):
         data = df[df['dataset'] == dataset].set_index(model_col).reindex(models).reset_index()
         offset = width * (i - len(datasets)/2 + 0.5)
-        ax.bar(x + offset, data['clean_accuracy'], width, 
+        bars = ax.bar(x + offset, data['clean_accuracy'], width, 
                label=dataset.upper(), alpha=0.8)
+        
+        # Add value labels
+        for bar in bars:
+            height = bar.get_height()
+            if not np.isnan(height) and height > 0:
+                ax.text(bar.get_x() + bar.get_width()/2., height + 1,
+                        f'{height:.1f}%', ha='center', va='bottom', fontsize=14)
     
-    ax.set_xlabel('Model')
-    ax.set_ylabel('Clean Accuracy (%)')
-    ax.set_title(f'Clean Accuracy Comparison: {attack_name} Attack')
+    ax.set_xlabel('Model', fontsize=18, fontweight='bold')
+    ax.set_ylabel('Clean Accuracy (%)', fontsize=18, fontweight='bold')
+    ax.set_title(f'Clean Accuracy Comparison: {attack_name} Attack', fontsize=20, fontweight='bold', pad=40)
     ax.set_xticks(x)
-    ax.set_xticklabels(models, rotation=45, ha='right')
-    ax.legend()
+    ax.set_xticklabels(models, rotation=45, ha='right', fontsize=16)
+    ax.legend(fontsize=14)
+    ax.tick_params(axis='y', labelsize=16)
     ax.grid(axis='y', alpha=0.3)
     ax.set_ylim(0, 100)
     
@@ -132,15 +148,23 @@ def plot_asr_comparison(results, save_path, attack_name="Backdoor"):
     for i, dataset in enumerate(datasets):
         data = df[df['dataset'] == dataset].set_index(model_col).reindex(models).reset_index()
         offset = width * (i - len(datasets)/2 + 0.5)
-        ax.bar(x + offset, data['attack_success_rate'], width,
+        bars = ax.bar(x + offset, data['attack_success_rate'], width,
                label=dataset.upper(), alpha=0.8)
+               
+        # Add value labels
+        for bar in bars:
+            height = bar.get_height()
+            if not np.isnan(height) and height > 0:
+                ax.text(bar.get_x() + bar.get_width()/2., height + 1,
+                        f'{height:.1f}%', ha='center', va='bottom', fontsize=14)
     
-    ax.set_xlabel('Model')
-    ax.set_ylabel('Attack Success Rate (%)')
-    ax.set_title(f'Attack Success Rate: {attack_name} Attack')
+    ax.set_xlabel('Model', fontsize=18, fontweight='bold')
+    ax.set_ylabel('Attack Success Rate (%)', fontsize=18, fontweight='bold')
+    ax.set_title(f'Attack Success Rate: {attack_name} Attack', fontsize=20, fontweight='bold', pad=40)
     ax.set_xticks(x)
-    ax.set_xticklabels(models, rotation=45, ha='right')
-    ax.legend()
+    ax.set_xticklabels(models, rotation=45, ha='right', fontsize=16)
+    ax.legend(fontsize=14)
+    ax.tick_params(axis='y', labelsize=16)
     ax.grid(axis='y', alpha=0.3)
     ax.set_ylim(0, 100)
     
@@ -264,20 +288,21 @@ def plot_pretrained_vs_scratch(results, save_path, attack_name="Backdoor"):
         bars_pt = ax.bar(x - width/2, pretrained_means, width, label='Pretrained', alpha=0.8)
         bars_sc = ax.bar(x + width/2, scratch_means, width, label='Scratch', alpha=0.8)
 
-        ax.set_xlabel('Dataset')
-        ax.set_ylabel(ylabel)
-        ax.set_title(f'{title_suffix}: Pretrained vs Scratch')
+        ax.set_xlabel('Dataset', fontsize=18, fontweight='bold')
+        ax.set_ylabel(ylabel, fontsize=18, fontweight='bold')
+        ax.set_title(f'{title_suffix}: Pretrained vs Scratch', fontsize=20, fontweight='bold', pad=40)
         ax.set_xticks(x)
-        ax.set_xticklabels([d.upper() for d in datasets])
-        ax.legend()
+        ax.set_xticklabels([d.upper() for d in datasets], fontsize=16)
+        ax.legend(fontsize=14)
+        ax.tick_params(axis='y', labelsize=16)
         ax.grid(axis='y', alpha=0.3)
-        ax.set_ylim(0, 105)
+        ax.set_ylim(0, 100)
 
         for i, (pt, sc) in enumerate(zip(pretrained_means, scratch_means)):
             if pt > 0:
-                ax.text(i - width/2, pt + 1, f'{pt:.1f}%', ha='center', va='bottom', fontsize=9)
+                ax.text(i - width/2, pt + 1, f'{pt:.1f}%', ha='center', va='bottom', fontsize=14)
             if sc > 0:
-                ax.text(i + width/2, sc + 1, f'{sc:.1f}%', ha='center', va='bottom', fontsize=9)
+                ax.text(i + width/2, sc + 1, f'{sc:.1f}%', ha='center', va='bottom', fontsize=14)
 
     plt.suptitle(f'{attack_name} Attack: Pretrained vs Scratch Comparison',
                  fontsize=14, fontweight='bold')
@@ -328,7 +353,7 @@ def plot_accuracy_by_training_style(results, save_path, attack_name="Backdoor"):
 
         ax.set_xlabel('Training Style')
         ax.set_ylabel(ylabel)
-        ax.set_title(f'{title_suffix} by Training Style')
+        ax.set_title(f'{title_suffix} by Training Style', pad=40)
         ax.set_xticks(x)
         ax.set_xticklabels(training_styles, rotation=45, ha='right')
         ax.legend()
@@ -371,7 +396,7 @@ def plot_model_comparison_grouped(results, save_path, attack_name="Backdoor"):
     
     axes[0].set_xlabel('Model')
     axes[0].set_ylabel('Clean Accuracy (%)')
-    axes[0].set_title('Clean Accuracy by Model')
+    axes[0].set_title('Clean Accuracy by Model', pad=40)
     axes[0].set_xticks(range(len(models)))
     axes[0].set_xticklabels(models, rotation=45, ha='right')
     axes[0].legend()
@@ -388,7 +413,7 @@ def plot_model_comparison_grouped(results, save_path, attack_name="Backdoor"):
     
     axes[1].set_xlabel('Model')
     axes[1].set_ylabel('Attack Success Rate (%)')
-    axes[1].set_title('Attack Success Rate by Model')
+    axes[1].set_title('Attack Success Rate by Model', pad=40)
     axes[1].set_xticks(range(len(models)))
     axes[1].set_xticklabels(models, rotation=45, ha='right')
     axes[1].legend()
@@ -442,7 +467,7 @@ def plot_trade_off_analysis(results, save_path, attack_name="Backdoor"):
     
     ax.set_xlabel('Attack Success Rate (%)')
     ax.set_ylabel('Clean Accuracy Drop (%)')
-    ax.set_title(f'Attack-Defense Trade-off: {attack_name}')
+    ax.set_title(f'Attack-Defense Trade-off: {attack_name}', pad=40)
     ax.legend()
     ax.grid(True, alpha=0.3)
     
@@ -585,13 +610,13 @@ def plot_poisoning_rate_analysis(results, save_path, attack_name="Backdoor"):
     
     axes[0].set_xlabel('Poisoning Rate (%)')
     axes[0].set_ylabel('Clean Accuracy (%)')
-    axes[0].set_title('Clean Accuracy vs Poisoning Rate')
+    axes[0].set_title('Clean Accuracy vs Poisoning Rate', pad=40)
     axes[0].legend()
     axes[0].grid(True, alpha=0.3)
     
     axes[1].set_xlabel('Poisoning Rate (%)')
     axes[1].set_ylabel('Attack Success Rate (%)')
-    axes[1].set_title('ASR vs Poisoning Rate')
+    axes[1].set_title('ASR vs Poisoning Rate', pad=40)
     axes[1].legend()
     axes[1].grid(True, alpha=0.3)
     

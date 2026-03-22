@@ -15,9 +15,9 @@ from datetime import datetime
 # Set default style
 sns.set_style("whitegrid")
 plt.rcParams['figure.figsize'] = (10, 6)
-plt.rcParams['font.size'] = 12
-plt.rcParams['axes.titlesize'] = 14
-plt.rcParams['axes.labelsize'] = 12
+plt.rcParams['font.size'] = 14
+plt.rcParams['axes.titlesize'] = 18
+plt.rcParams['axes.labelsize'] = 14
 
 
 def plot_training_history(
@@ -90,17 +90,23 @@ def plot_attack_comparison(
     plt.figure(figsize=(12, 6))
     
     if 'Model' in results_df.columns:
-        sns.barplot(data=results_df, x='Attack', y=metric, hue='Model', palette='Set2')
+        ax = sns.barplot(data=results_df, x='Attack', y=metric, hue='Model', palette='Set2')
     else:
-        sns.barplot(data=results_df, x='Attack', y=metric, palette='Set2')
+        ax = sns.barplot(data=results_df, x='Attack', y=metric, palette='Set2')
     
-    plt.xlabel('Attack Type')
-    plt.ylabel(metric)
-    plt.title(f'{metric} Comparison Across Attacks')
-    plt.xticks(rotation=45, ha='right')
+    # Add value labels
+    for container in ax.containers:
+        ax.bar_label(container, fmt='%.1f%%', padding=3, fontsize=14)
+
+    plt.xlabel('Attack Type', fontsize=18, fontweight='bold')
+    plt.ylabel(metric, fontsize=18, fontweight='bold')
+    plt.title(f'{metric} Comparison Across Attacks', fontsize=20, fontweight='bold')
+    plt.xticks(rotation=45, ha='right', fontsize=16)
+    plt.yticks(fontsize=16)
+    plt.ylim(0, 100)
     
     if 'Model' in results_df.columns:
-        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
+        plt.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=14)
     
     plt.grid(True, axis='y', alpha=0.3)
     plt.tight_layout()
@@ -365,18 +371,28 @@ def plot_multi_metric_comparison(
         else:
             sns.barplot(data=results_df, x=group_by, y=metric, 
                        ax=ax, palette='Set2')
+                       
+        # Add value labels
+        for container in ax.containers:
+            ax.bar_label(container, fmt='%.1f%%', padding=3, fontsize=12)
         
-        ax.set_xlabel(group_by.capitalize())
-        ax.set_ylabel(metric)
-        ax.set_title(metric.replace('_', ' ').title())
-        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right')
+        ax.set_xlabel(group_by.capitalize(), fontsize=16, fontweight='bold')
+        ax.set_ylabel(metric, fontsize=16, fontweight='bold')
+        title_str = metric.replace('_', ' ').title()
+        ax.set_title(title_str, fontsize=18, fontweight='bold')
+        ax.set_xticklabels(ax.get_xticklabels(), rotation=45, ha='right', fontsize=14)
+        ax.tick_params(axis='y', labelsize=14)
         ax.grid(True, axis='y', alpha=0.3)
+        
+        # Only cap at 100 if it max 100 makes sense
+        if 'acc' in metric.lower() or 'asr' in metric.lower() or 'rate' in metric.lower():
+            ax.set_ylim(0, 100)
     
     # Hide extra subplots
     for idx in range(n_metrics, len(axes)):
         axes[idx].axis('off')
     
-    plt.suptitle(title, fontsize=16, fontweight='bold', y=1.00)
+    plt.suptitle(title, fontsize=20, fontweight='bold', y=1.02)
     plt.tight_layout()
     
     if save_path:

@@ -24,8 +24,12 @@ from utils.visualization_utils import (
 )
 
 # Set style
-set_plot_style('whitegrid', font_scale=1.0)
-plt.rcParams['figure.figsize'] = (12, 8)
+set_plot_style('whitegrid', font_scale=1.5)
+plt.rcParams['figure.figsize'] = (14, 8)
+plt.rcParams['axes.labelsize'] = 18
+plt.rcParams['axes.titlesize'] = 20
+plt.rcParams['xtick.labelsize'] = 16
+plt.rcParams['ytick.labelsize'] = 16
 
 
 def load_results(results_path):
@@ -60,15 +64,23 @@ def plot_accuracy_comparison(results, save_path):
         # Ensure data is sorted by model order
         data = data.set_index(model_col).reindex(models).reset_index()
         offset = width * (i - len(datasets)/2 + 0.5)
-        ax.bar(x + offset, data['clean_accuracy'], width, 
+        bars = ax.bar(x + offset, data['clean_accuracy'], width, 
                label=dataset.upper(), alpha=0.8)
+        
+        # Add value labels
+        for bar in bars:
+            height = bar.get_height()
+            if not np.isnan(height) and height > 0:
+                ax.text(bar.get_x() + bar.get_width()/2., height + 1,
+                        f'{height:.1f}%', ha='center', va='bottom', fontsize=14)
     
-    ax.set_xlabel('Model')
-    ax.set_ylabel('Clean Accuracy (%)')
-    ax.set_title('Baseline Model Performance: Clean Accuracy Comparison', pad=20)
+    ax.set_xlabel('Model', fontsize=18)
+    ax.set_ylabel('Clean Accuracy (%)', fontsize=18)
+    ax.set_title('Baseline Model Performance: Clean Accuracy Comparison', pad=40, fontsize=20)
     ax.set_xticks(x)
-    ax.set_xticklabels(models, rotation=45, ha='right')
-    ax.legend()
+    ax.set_xticklabels(models, rotation=45, ha='right', fontsize=16)
+    ax.tick_params(axis='y', labelsize=16)
+    ax.legend(fontsize=14)
     ax.grid(axis='y', alpha=0.3)
     ax.set_ylim(0, 100)
     
@@ -126,13 +138,14 @@ def plot_model_comparison_line(results, save_path):
         
         # Add model labels
         for i, (_, row) in enumerate(data.iterrows()):
-            ax.text(i, row['clean_accuracy'] + 0.5, row[model_col], 
-                   rotation=45, ha='left', fontsize=8, alpha=0.7)
+            ax.text(i, row['clean_accuracy'] + 1.5, f"{row['clean_accuracy']:.1f}%", 
+                   rotation=45, ha='left', fontsize=14, alpha=0.9)
     
-    ax.set_xlabel('Model (sorted by accuracy)')
-    ax.set_ylabel('Clean Accuracy (%)')
-    ax.set_title('Baseline Model Performance by Dataset', pad=20)
-    ax.legend()
+    ax.set_xlabel('Model (sorted by accuracy)', fontsize=18)
+    ax.set_ylabel('Clean Accuracy (%)', fontsize=18)
+    ax.set_title('Baseline Model Performance by Dataset', pad=40, fontsize=20)
+    ax.tick_params(axis='both', which='major', labelsize=16)
+    ax.legend(fontsize=14)
     ax.grid(axis='y', alpha=0.3)
     ax.set_ylim(0, 100)
     
@@ -172,14 +185,22 @@ def plot_accuracy_by_training_style(results, save_path):
             means.append(data['clean_accuracy'].mean() if len(data) > 0 else 0)
         
         offset = width * (i - len(datasets)/2 + 0.5)
-        ax.bar(x + offset, means, width, label=dataset.upper(), alpha=0.8)
+        bars = ax.bar(x + offset, means, width, label=dataset.upper(), alpha=0.8)
+        
+        # Add value labels
+        for bar in bars:
+            height = bar.get_height()
+            if height > 0:
+                ax.text(bar.get_x() + bar.get_width() / 2, height + 1, f'{height:.1f}%', 
+                        ha='center', va='bottom', fontsize=14)
     
-    ax.set_xlabel('Training Style')
-    ax.set_ylabel('Average Clean Accuracy (%)')
-    ax.set_title('Baseline Performance by Training Style', pad=20)
+    ax.set_xlabel('Training Style', fontsize=18)
+    ax.set_ylabel('Average Clean Accuracy (%)', fontsize=18)
+    ax.set_title('Baseline Performance by Training Style', pad=40, fontsize=20)
     ax.set_xticks(x)
-    ax.set_xticklabels(training_styles, rotation=45, ha='right')
-    ax.legend()
+    ax.set_xticklabels(training_styles, rotation=45, ha='right', fontsize=16)
+    ax.tick_params(axis='y', labelsize=16)
+    ax.legend(fontsize=14)
     ax.grid(axis='y', alpha=0.3)
     ax.set_ylim(0, 100)
     
@@ -223,21 +244,22 @@ def plot_pretrained_vs_scratch(results, save_path):
     ax.bar(x - width/2, pretrained_means, width, label='Pretrained', alpha=0.8)
     ax.bar(x + width/2, scratch_means, width, label='Scratch', alpha=0.8)
     
-    ax.set_xlabel('Dataset')
-    ax.set_ylabel('Average Clean Accuracy (%)')
-    ax.set_title('Pretrained vs Scratch-Trained Models', pad=20)
+    ax.set_xlabel('Dataset', fontsize=18)
+    ax.set_ylabel('Average Clean Accuracy (%)', fontsize=18)
+    ax.set_title('Pretrained vs Scratch-Trained Models', pad=40, fontsize=20)
     ax.set_xticks(x)
-    ax.set_xticklabels([d.upper() for d in datasets])
-    ax.legend()
+    ax.set_xticklabels([d.upper() for d in datasets], fontsize=16)
+    ax.tick_params(axis='y', labelsize=16)
+    ax.legend(fontsize=14)
     ax.grid(axis='y', alpha=0.3)
     ax.set_ylim(0, 100)
     
     # Add value labels on bars
     for i, (pt, sc) in enumerate(zip(pretrained_means, scratch_means)):
         if pt > 0:
-            ax.text(i - width/2, pt + 1, f'{pt:.1f}%', ha='center', va='bottom', fontsize=9)
+            ax.text(i - width/2, pt + 1, f'{pt:.1f}%', ha='center', va='bottom', fontsize=14)
         if sc > 0:
-            ax.text(i + width/2, sc + 1, f'{sc:.1f}%', ha='center', va='bottom', fontsize=9)
+            ax.text(i + width/2, sc + 1, f'{sc:.1f}%', ha='center', va='bottom', fontsize=14)
     
     plt.tight_layout()
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
@@ -275,13 +297,14 @@ def plot_training_efficiency(results, save_path):
         for _, row in data.iterrows():
             ax.annotate(row[model_col], 
                        (row['training_epochs'], row['clean_accuracy']),
-                       fontsize=8, alpha=0.7,
+                       fontsize=14, alpha=0.9,
                        xytext=(5, 5), textcoords='offset points')
     
-    ax.set_xlabel('Training Epochs')
-    ax.set_ylabel('Clean Accuracy (%)')
-    ax.set_title('Training Efficiency: Accuracy vs Epochs', pad=20)
-    ax.legend()
+    ax.set_xlabel('Training Epochs', fontsize=18)
+    ax.set_ylabel('Clean Accuracy (%)', fontsize=18)
+    ax.set_title('Training Efficiency: Accuracy vs Epochs', pad=40, fontsize=20)
+    ax.tick_params(axis='both', which='major', labelsize=16)
+    ax.legend(fontsize=14)
     ax.grid(True, alpha=0.3)
     ax.set_ylim(0, 100)
     
@@ -313,15 +336,16 @@ def plot_model_ranking(results, save_path):
                    color=sns.color_palette("viridis", len(model_avg)))
     
     ax.set_yticks(y_pos)
-    ax.set_yticklabels(model_avg.index)
-    ax.set_xlabel('Average Clean Accuracy (%)')
-    ax.set_title('Model Ranking (Average Across Datasets)', pad=20)
+    ax.set_yticklabels(model_avg.index, fontsize=16)
+    ax.set_xlabel('Average Clean Accuracy (%)', fontsize=18)
+    ax.set_title('Model Ranking (Average Across Datasets)', pad=40, fontsize=20)
+    ax.tick_params(axis='x', labelsize=16)
     ax.grid(axis='x', alpha=0.3)
     ax.set_xlim(0, 100)
     
     # Add value labels
     for i, v in enumerate(model_avg.to_numpy()):
-        ax.text(v + 1, i, f'{v:.2f}%', va='center', fontsize=9)
+        ax.text(v + 1, i, f'{v:.2f}%', va='center', fontsize=14)
     
     plt.tight_layout()
     plt.savefig(save_path, dpi=300, bbox_inches='tight')

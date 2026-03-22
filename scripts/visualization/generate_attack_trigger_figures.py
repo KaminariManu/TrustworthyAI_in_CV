@@ -223,7 +223,7 @@ def make_trigger_figure(dataset: str, poison_type: str, n_samples: int,
 
             if row == 0:
                 class_name = get_class_name(dataset, labels[col].item())
-                ax.set_title(class_name, fontsize=7.5, color='white',
+                ax.set_title(class_name, fontsize=11, color='white',
                              pad=3, fontweight='bold')
 
         # row label on the left
@@ -233,7 +233,7 @@ def make_trigger_figure(dataset: str, poison_type: str, n_samples: int,
             -0.01, 0.5, row_labels[row],
             transform=ax0.transAxes,
             va='center', ha='right',
-            fontsize=9, color=row_colors[row],
+            fontsize=14, color=row_colors[row],
             fontweight='bold',
         )
 
@@ -242,7 +242,7 @@ def make_trigger_figure(dataset: str, poison_type: str, n_samples: int,
         0.5, 0.93,
         f'Backdoor Trigger Visualisation — {DATASET_LABELS[dataset]}',
         ha='center', va='center',
-        fontsize=14, fontweight='bold', color='white',
+        fontsize=18, fontweight='bold', color='white',
     )
     _pr_str = f'{poison_rate*100:.0f}%'
     _cr_str = f'  cover rate: {cover_rate*100:.0f}%' if poison_type.lower() == 'wanet' else ''
@@ -250,7 +250,7 @@ def make_trigger_figure(dataset: str, poison_type: str, n_samples: int,
         0.5, 0.865,
         f'Attack: {poison_type}  |  Poison rate: {_pr_str}{_cr_str}  |  Target class: {get_class_name(dataset, target_class)} ({target_class})',
         ha='center', va='center',
-        fontsize=9.5, color='#aaaacc',
+        fontsize=13, color='#aaaacc',
     )
 
     # dividing line between rows

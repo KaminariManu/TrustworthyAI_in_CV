@@ -94,7 +94,7 @@ STRIP_COLORS = {
 # ══════════════════════════════════════════════════════════════════════════════
 
 def set_style(palette: str = 'tab10') -> None:
-    sns.set_theme(style='whitegrid', font_scale=1.1, palette=palette)
+    sns.set_theme(style='whitegrid', font_scale=1.8, palette=palette)
     sns.set_palette(palette)
     plt.rcParams.update({
         'figure.dpi':    150,
@@ -102,6 +102,12 @@ def set_style(palette: str = 'tab10') -> None:
         'figure.figsize': (14, 6),
         'axes.spines.top':   False,
         'axes.spines.right': False,
+        'font.size': 16,
+        'axes.titlesize': 20,
+        'axes.labelsize': 16,
+        'xtick.labelsize': 14,
+        'ytick.labelsize': 14,
+        'legend.fontsize': 14,
     })
 
 
@@ -272,11 +278,20 @@ def _grouped_bar(df: pd.DataFrame, metric: str, ylabel: str,
     ax.set_xlabel('Model')
     ax.set_ylabel(ylabel)
     ax.set_title(title)
-    ax.set_ylim(*ylim)
+    if ylim[1] > 100:
+        ax.set_ylim(ylim[0], 100)
+    else:
+        ax.set_ylim(*ylim)
     ax.set_xticks(x_idx)
     ax.set_xticklabels([str(v) for v in x_order], rotation=30, ha='right')
     ax.legend(title=hue_col.replace('_', ' ').title())
     ax.grid(axis='y', alpha=0.4)
+    # Increase font sizes
+    ax.set_xlabel(ax.get_xlabel(), fontsize=16, fontweight='bold')
+    ax.set_ylabel(ax.get_ylabel(), fontsize=16, fontweight='bold')
+    ax.set_title(ax.get_title(), fontsize=18, fontweight='bold', pad=40)
+    ax.tick_params(axis='x', labelsize=13)
+    ax.tick_params(axis='y', labelsize=13)
     plt.tight_layout()
     save_fig(fig, save_path, title)
 
@@ -290,8 +305,12 @@ def _heatmap(pivot: pd.DataFrame, title: str, save_path: Path,
     fig, ax = plt.subplots(figsize=(max(8, pivot.shape[1] * 2), max(5, pivot.shape[0] * 0.7)))
     sns.heatmap(pivot, annot=True, fmt=fmt, cmap=cmap,
                 vmin=vmin, vmax=vmax, linewidths=0.5, ax=ax,
-                cbar_kws={'label': title})
-    ax.set_title(title, fontsize=13, pad=14)
+                cbar_kws={'label': title}, annot_kws={'fontsize': 12})
+    ax.set_title(title, fontsize=20, pad=40, fontweight='bold')
+    ax.set_xlabel('Model & Attack', fontsize=16, fontweight='bold')
+    ax.set_ylabel('Dataset', fontsize=16, fontweight='bold')
+    ax.tick_params(axis='x', labelsize=13)
+    ax.tick_params(axis='y', labelsize=13)
     plt.tight_layout()
     save_fig(fig, save_path)
 
@@ -401,12 +420,13 @@ def _strip_tpr_fpr_scatter(df: pd.DataFrame, path: Path) -> None:
 
     ax.plot([0, 100], [0, 100], 'k--', alpha=0.25, linewidth=1.2,
             label='Random baseline (no entropy separation)')
-    ax.set_xlabel('False Alarm Rate / FPR (%) — clean inputs wrongly rejected', fontsize=10)
-    ax.set_ylabel('Detection Rate / TPR (%) — backdoored inputs caught', fontsize=10)
-    ax.set_title('STRIP - Detection Quality: Backdoor Caught vs False Alarms', fontsize=11)
-    ax.set_xlim(-2, 102); ax.set_ylim(-2, 102)
+    ax.set_xlabel('False Alarm Rate / FPR (%) — clean inputs wrongly rejected', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Detection Rate / TPR (%) — backdoored inputs caught', fontsize=14, fontweight='bold')
+    ax.set_title('STRIP - Detection Quality: Backdoor Caught vs False Alarms', fontsize=18, fontweight='bold', pad=40)
+    ax.set_xlim(-2, 100); ax.set_ylim(-2, 100)
+    ax.tick_params(axis='both', labelsize=12)
     patches = [mpatches.Patch(color=c, label=d) for d, c in colour_map.items()]
-    ax.legend(handles=patches, title='Dataset')
+    ax.legend(handles=patches, title='Dataset', fontsize=12, title_fontsize=13)
     ax.grid(alpha=0.25)
     plt.tight_layout()
     save_fig(fig, path)
@@ -460,10 +480,11 @@ def _strip_entropy_comparison(df: pd.DataFrame, path: Path) -> None:
                         ha='center', fontsize=7.5, color='dimgray', va='bottom')
 
     ax.set_xticks(x)
-    ax.set_xticklabels([str(l) for l in labels], rotation=35, ha='right', fontsize=9)
-    ax.set_ylabel('Normalised Prediction Entropy H(·)')
-    ax.set_title('STRIP - Entropy Separation: Clean vs Backdoored Inputs')
-    ax.legend(loc='upper right', fontsize=9)
+    ax.set_xticklabels([str(l) for l in labels], rotation=35, ha='right', fontsize=11)
+    ax.set_ylabel('Normalised Prediction Entropy H(·)', fontsize=16, fontweight='bold')
+    ax.set_title('STRIP - Entropy Separation: Clean vs Backdoored Inputs', fontsize=18, fontweight='bold', pad=40)
+    ax.legend(loc='upper right', fontsize=12)
+    ax.tick_params(axis='y', labelsize=12)
     ax.grid(axis='y', alpha=0.3)
     plt.tight_layout()
     save_fig(fig, path)
@@ -495,20 +516,21 @@ def _strip_entropy_gap_bar(df: pd.DataFrame, path: Path) -> None:
     fig, ax = plt.subplots(figsize=(max(12, len(labels) * 1.5), 5))
     ax.bar(x, df['entropy_gap'].fillna(0), color=colours, alpha=0.87, edgecolor='white')
     ax.set_xticks(x)
-    ax.set_xticklabels([str(l) for l in labels], rotation=35, ha='right', fontsize=9)
-    ax.set_ylabel('Entropy Gap  H(clean) − H(poison)')
-    ax.set_title('STRIP - Entropy Separation Gap: H(clean) - H(poison) per Model')
+    ax.set_xticklabels([str(l) for l in labels], rotation=35, ha='right', fontsize=11)
+    ax.set_ylabel('Entropy Gap  H(clean) − H(poison)', fontsize=16, fontweight='bold')
+    ax.set_title('STRIP - Entropy Separation Gap: H(clean) - H(poison) per Model', fontsize=18, fontweight='bold', pad=40)
     ax.axhline(0,   color='black',       linewidth=0.9, linestyle='-',  alpha=0.5)
     ax.axhline(0.3, color=ATTACK_PALETTE[2], linewidth=1.0, linestyle='--', alpha=0.45,
                label='Strong separation threshold (0.3)')
     ax.axhline(0.1, color=ATTACK_PALETTE[0], linewidth=1.0, linestyle='--', alpha=0.45,
                label='Moderate separation threshold (0.1)')
+    ax.tick_params(axis='y', labelsize=12)
     legend_handles = [
         mpatches.Patch(color=ATTACK_PALETTE[2], label='Gap > 0.3  (strong — reliable detection)'),
         mpatches.Patch(color=ATTACK_PALETTE[0], label='Gap 0.1–0.3  (moderate)'),
         mpatches.Patch(color=ATTACK_PALETTE[1], label='Gap < 0.1  (weak — distributions overlap)'),
     ]
-    ax.legend(handles=legend_handles, loc='upper right')
+    ax.legend(handles=legend_handles, loc='upper right', fontsize=12)
     ax.grid(axis='y', alpha=0.3)
     plt.tight_layout()
     save_fig(fig, path)
@@ -577,12 +599,13 @@ def _strip_detection_breakdown(df: pd.DataFrame, path: Path) -> None:
             )
 
     ax.set_xticks(x)
-    ax.set_xticklabels([str(l) for l in labels], rotation=35, ha='right', fontsize=9)
-    ax.set_ylabel('Backdoored Inputs (%)')
-    ax.set_ylim(0, 110)
-    ax.set_title('STRIP - Backdoor Detection Breakdown per Model')
+    ax.set_xticklabels([str(l) for l in labels], rotation=35, ha='right', fontsize=11)
+    ax.set_ylabel('Backdoored Inputs (%)', fontsize=16, fontweight='bold')
+    ax.set_ylim(0, 100)
+    ax.set_title('STRIP - Backdoor Detection Breakdown per Model', fontsize=18, fontweight='bold', pad=40)
     ax.axhline(50, color='gray', linestyle=':', linewidth=0.8, alpha=0.4)
-    ax.legend(loc='lower right')
+    ax.legend(loc='lower right', fontsize=12)
+    ax.tick_params(axis='y', labelsize=12)
     ax.grid(axis='y', alpha=0.3)
     plt.tight_layout()
     save_fig(fig, path)
@@ -662,12 +685,13 @@ def _strip_roc_scatter(df: pd.DataFrame, path: Path) -> None:
             label='Random baseline — no entropy separation')
     ax.plot([0, 0, 100], [0, 100, 100], 'g:', alpha=0.35, linewidth=1.5,
             label='Perfect detector')
-    ax.set_xlabel('False Alarm Rate / FPR (%) — clean inputs wrongly rejected', fontsize=10)
-    ax.set_ylabel('Detection Rate / TPR (%) — backdoored inputs caught', fontsize=10)
-    ax.set_title('STRIP - Operating Points by Attack Type (FPR vs TPR)', fontsize=11)
-    ax.set_xlim(-2, 102); ax.set_ylim(-2, 102)
+    ax.set_xlabel('False Alarm Rate / FPR (%) — clean inputs wrongly rejected', fontsize=14, fontweight='bold')
+    ax.set_ylabel('Detection Rate / TPR (%) — backdoored inputs caught', fontsize=14, fontweight='bold')
+    ax.set_title('STRIP - Operating Points by Attack Type (FPR vs TPR)', fontsize=18, fontweight='bold', pad=40)
+    ax.set_xlim(-2, 100); ax.set_ylim(-2, 100)
+    ax.tick_params(axis='both', labelsize=12)
     legend_patches = [mpatches.Patch(color=c, label=a) for a, c in colours.items()]
-    ax.legend(handles=legend_patches, title='Attack Type')
+    ax.legend(handles=legend_patches, title='Attack Type', fontsize=12, title_fontsize=13)
     ax.grid(alpha=0.25)
     plt.tight_layout()
     save_fig(fig, path)
@@ -746,13 +770,16 @@ def _nc_mask_norm_comparison(df: pd.DataFrame, path: Path) -> None:
     fig, ax = plt.subplots(figsize=(14, 6))
     sns.boxplot(data=df2, x='model_label', y='min_mask_norm', hue='dataset',
                 ax=ax, palette='Set2')
-    ax.set_xlabel('Model')
-    ax.set_ylabel('Minimum Mask Norm (L₁)')
+    ax.set_xlabel('Model', fontsize=16, fontweight='bold')
+    ax.set_ylabel('Minimum Mask Norm (L₁)', fontsize=16, fontweight='bold')
     ax.set_title('Neural Cleanse — Minimum Trigger Mask Norm per Model\n'
                  'NC finds the smallest mask that redirects all inputs to each class — '
                  'a backdoored class needs an abnormally small mask (the trigger is already embedded)\n'
-                 'Lower value = stronger anomaly signal = stronger evidence of backdoor')
-    ax.tick_params(axis='x', rotation=35)
+                 'Lower value = stronger anomaly signal = stronger evidence of backdoor',
+                 fontsize=16, fontweight='bold', pad=15)
+    ax.tick_params(axis='x', rotation=35, labelsize=12)
+    ax.tick_params(axis='y', labelsize=12)
+    ax.legend(fontsize=12, title_fontsize=13)
     ax.grid(axis='y', alpha=0.4)
     plt.tight_layout()
     save_fig(fig, path)
