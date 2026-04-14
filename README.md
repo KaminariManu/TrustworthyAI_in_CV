@@ -6,7 +6,7 @@ Unified framework for training, attacking, defending, and reporting backdoor exp
 
 - End-to-end training pipelines for clean and poisoned models
 - Three attack pipelines: BadNet, WaNet, Refool
-- Two defenses: STRIP and Neural Cleanse
+- One defense: STRIP
 - Automated table and figure generation for baseline, attacks, and defenses
 - Shared source package for models, datasets, and evaluation
 
