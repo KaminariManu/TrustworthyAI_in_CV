@@ -200,8 +200,6 @@ If you use this repository in academic work, please cite the datasets and core m
 
 - STRIP
    - Gao, Y., Xu, C., et al. (2019). STRIP: A Defence Against Trojan Attacks on Deep Neural Networks.
-- Neural Cleanse
-   - Wang, B., Yao, Y., et al. (2019). Neural Cleanse: Identifying and Mitigating Backdoor Attacks in Neural Networks.
 
 ### Model families
 
